@@ -1,0 +1,20 @@
+[package]
+name = "examples"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+hot-curry.workspace = true
+tokio = { workspace = true, features = ["full"] }
+tracing-subscriber.workspace = true
+
+[[example]]
+name = "simple"
+path = "src/simple.rs"
+
+[[example]]
+name = "analyze"
+path = "src/analyze.rs"

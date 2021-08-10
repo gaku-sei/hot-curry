@@ -1,0 +1,8 @@
+[package]
+name = "tera-visitor"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tera.workspace = true
