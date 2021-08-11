@@ -13,15 +13,13 @@ Running the `hot-curry` command you can then generate an HTML file and/or a PDF 
 
 ```toml
 [source]
-# Path to the source that contains the CV's data
+# Path to the source that contains the CV's data, can be json, toml, or yml/yaml
 path = "./source.yml"
-# The type of the source: one of yaml, json, or toml
-type = "yaml"
 
-[style]
+[template]
 # Path or URL to the html file to render the source data, must use Tera's syntax
 source = "./render.html"
-# If you want to use an URL you can use the following syntax:
+# If your template is hosted you can use the following syntax:
 # source = {url = "https://..."}
 
 [output]

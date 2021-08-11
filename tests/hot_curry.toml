@@ -1,12 +1,10 @@
 [source]
-# Path to the source that contains the CV's data
+# Path to the source that contains the CV's data, can be json, toml, or yml/yaml
 path = "./source.yml"
-# The type of the source: one of yaml, json, or toml
-type = "yaml"
 
-[style]
+[template]
 # Path or URL to the html file to render the source data, must use Tera's syntax
-source = {path = "./render.html"}
+source = "./render.html"
 
 [output]
 # The path, doesn't include extension

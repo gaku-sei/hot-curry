@@ -4,7 +4,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::path::Path;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{Config, StyleSource};
+use crate::config::{Config, TemplateSource};
 use crate::utils::read_file_to_string;
 
 mod config;
@@ -31,23 +31,24 @@ fn main() -> Result<()> {
     let config = toml::from_str::<Config>(config_content.as_str())?;
 
     let source_content =
-        read_file_to_string(config_file_base_path.join(config.source.path.as_str()))?;
+        read_file_to_string(config_file_base_path.join(config.source.file.path.as_str()))?;
 
     let source = config
         .source
+        .file
         .type_
         .deserialize_str::<serde_json::Value>(source_content.as_str())?;
 
     let context = TeraContext::from_value(source)?;
 
-    let style_content = match config.style.source {
-        StyleSource::Simple(path) | StyleSource::Path { path } => {
+    let template_content = match config.template.source {
+        TemplateSource::Simple(path) | TemplateSource::Path { path } => {
             read_file_to_string(config_file_base_path.join(path.as_str()))?
         }
-        StyleSource::Url { url } => reqwest::blocking::get(url)?.text()?,
+        TemplateSource::Url { url } => reqwest::blocking::get(url)?.text()?,
     };
 
-    let output = Tera::one_off(style_content.as_str(), &context, false)?;
+    let output = Tera::one_off(template_content.as_str(), &context, false)?;
 
     let output_base_path = config_file_base_path.join(config.output.path.as_str());
 

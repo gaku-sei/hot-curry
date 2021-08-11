@@ -1,16 +1,22 @@
 use anyhow::{anyhow, Context, Result};
 use headless_chrome::{protocol::page::PrintToPdfOptions, Browser};
-use serde::{Deserialize, Serialize};
-use std::{fs::File, io::Write};
+use serde::{
+    de::{self, Unexpected},
+    Deserialize, Deserializer, Serialize,
+};
+use std::{
+    ffi::OsStr,
+    fmt::{self, Formatter},
+    fs::File,
+    io::Write,
+    path::Path,
+};
 use url::Url;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 pub enum SourceType {
-    #[serde(rename = "yaml")]
     Yaml,
-    #[serde(rename = "jsonl")]
     Json,
-    #[serde(rename = "toml")]
     Toml,
 }
 
@@ -88,24 +94,75 @@ impl OutputType {
     }
 }
 
+#[derive(Debug)]
+pub struct SourceFile {
+    pub path: String,
+    pub type_: SourceType,
+}
+
+impl SourceFile {
+    fn deserialize<'de, D>(deserializer: D) -> Result<SourceFile, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_string(SourceFileVisitor)
+    }
+}
+
+pub struct SourceFileVisitor;
+
+impl<'de> de::Visitor<'de> for SourceFileVisitor {
+    type Value = SourceFile;
+
+    fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
+        write!(
+            formatter,
+            "a valid path with one of the following extentions: json, toml, or yml/yaml"
+        )
+    }
+
+    fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        let path = Path::new(s);
+
+        let extension = path
+            .extension()
+            .and_then(OsStr::to_str)
+            .ok_or_else(|| de::Error::invalid_value(Unexpected::Str(s), &self))?;
+
+        let source_type = match extension {
+            "json" => Ok(SourceType::Json),
+            "toml" => Ok(SourceType::Toml),
+            "yml" | "yaml" => Ok(SourceType::Yaml),
+            _ => Err(de::Error::invalid_value(Unexpected::Str(s), &self)),
+        }?;
+
+        Ok(SourceFile {
+            path: path.to_string_lossy().into_owned(),
+            type_: source_type,
+        })
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Source {
-    pub path: String,
-    #[serde(rename = "type")]
-    pub type_: SourceType,
+    #[serde(rename = "path", deserialize_with = "SourceFile::deserialize")]
+    pub file: SourceFile,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum StyleSource {
+pub enum TemplateSource {
     Simple(String),
     Path { path: String },
     Url { url: Url },
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Style {
-    pub source: StyleSource,
+pub struct Template {
+    pub source: TemplateSource,
 }
 
 #[derive(Debug, Deserialize)]
@@ -116,7 +173,7 @@ pub struct Output {
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub source: Source,
-    pub style: Style,
     pub output: Output,
+    pub source: Source,
+    pub template: Template,
 }
