@@ -6,7 +6,7 @@ use url::Url;
 
 #[derive(Debug, Deserialize)]
 pub enum SourceType {
-    #[serde(rename = "yml")]
+    #[serde(rename = "yaml")]
     Yaml,
     #[serde(rename = "jsonl")]
     Json,
