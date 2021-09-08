@@ -42,7 +42,7 @@ pub enum OutputType {
 }
 
 impl OutputType {
-    pub fn write(&self, output_base_path: &str, output: &str) -> Result<()> {
+    pub fn write(&self, output_base_path: &str, output: &str, xxx: &str) -> Result<()> {
         match self {
             OutputType::Html => {
                 let mut file = File::create(format!("{}.html", output_base_path))?;
@@ -56,9 +56,14 @@ impl OutputType {
                     .wait_for_initial_tab()
                     .map_err(|_| anyhow!("Tab init error"))?;
 
-                let url = Url::parse(format!("data:text/html,{}", output).as_str())?;
+                // let url = Url::parse(format!("data:text/html,{}", output).as_str())?;
 
-                tab.navigate_to(url.as_str())
+                let path = format!("file://{}", xxx);
+
+                println!("path {}", path);
+
+                // tab.navigate_to(url.as_str())
+                tab.navigate_to(path.as_str())
                     .map_err(|_| anyhow!("Couldn't open output html"))?;
 
                 tab.wait_until_navigated()
@@ -152,7 +157,8 @@ pub struct Source {
     pub file: SourceFile,
 }
 
-#[derive(Debug, Deserialize)]
+// TODO: Drop clone
+#[derive(Debug, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum TemplateSource {
     Simple(String),

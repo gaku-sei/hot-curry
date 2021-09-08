@@ -1,0 +1,36 @@
+---
+source: tests/html_test.rs
+expression: new_html
+
+---
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fake.com/static/styles.css" rel="stylesheet">
+    <link href="https://already-an-url/styles.css" rel="stylesheet">
+    <script rel="stylesheet" src="https://already-an-url/index.js"></script>
+    <script rel="stylesheet" src="https://fake.com/static/index.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap");
+
+      body {
+        font-family: "Lato", sans-serif;
+      }
+
+      @media print {
+        .summary {
+          break-inside: avoid-page;
+        }
+      }
+    </style>
+    <title>{{ basics.last_name }} {{ basics.first_name }}'s CV</title>
+  </head>
+  <body class="text-gray-800">
+    <main class="flex flex-col md:flex-row">
+      <img alt="already-an-url" src="https://already-an-url/image.png">
+      <img alt="already-an-url" src="https://fake.com/static/image.png">
+    </main>
+  
+
+</body></html>

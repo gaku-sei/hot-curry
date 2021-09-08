@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <link href="https://already-an-url/styles.css" rel="stylesheet" />
+    <script src="https://already-an-url/index.js" rel="stylesheet"></script>
+    <script src="/static/index.js" rel="stylesheet"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap");
+
+      body {
+        font-family: "Lato", sans-serif;
+      }
+
+      @media print {
+        .summary {
+          break-inside: avoid-page;
+        }
+      }
+    </style>
+    <title>{{ basics.last_name }} {{ basics.first_name }}'s CV</title>
+  </head>
+  <body class="text-gray-800">
+    <main class="flex flex-col md:flex-row">
+      <img alt="already-an-url" src="https://already-an-url/image.png" />
+      <img alt="already-an-url" src="/static/image.png" />
+    </main>
+  </body>
+</html>
